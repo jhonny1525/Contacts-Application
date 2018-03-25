@@ -1,6 +1,8 @@
 package com.example.troll.contacts;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -27,8 +29,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
     //Fields Declarations
-    private EditText email,password;
-    private Button loginemail;
     private SignInButton logingoogle;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
         mAuth=FirebaseAuth.getInstance();
 
         //Initialize fields
-        email=(EditText)findViewById(R.id.email);
-        password=(EditText)findViewById(R.id.password);
-        loginemail=(Button)findViewById(R.id.loginemail);
         logingoogle=(SignInButton) findViewById(R.id.logingoogle);
 
         logingoogle.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +63,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                }).setNegativeButton("No", null).show();
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -95,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
                 // Google Sign In failed
                 // Using toast to display error
                 Toast.makeText(this, "Error authenticating with Google", Toast.LENGTH_SHORT).show();
-                Log.w("tagbc", "Google sign in failed", e);
             }
         }
 
@@ -105,8 +116,6 @@ public class MainActivity extends AppCompatActivity {
 
     // [START auth_with_google]
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-       // Log.d("bctag3", "firebaseAuthWithGoogle:" + acct.getId());
-      //  showProgressDialog();
         pd=new ProgressDialog(MainActivity.this,ProgressDialog.THEME_DEVICE_DEFAULT_DARK);
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pd.setIndeterminate(false);
@@ -121,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d("tagbc1", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             pd.dismiss();
                             if(user!=null){
@@ -136,29 +144,8 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
-                            Log.w("tagbc2", "signInWithCredential:failure", task.getException());
                         }
                     }
                 });
     }
-// [END auth_with_google]
-
-  /*  private void updateUI(FirebaseUser user) {
-     //   hideProgressDialog();
-        if (user != null) {
-            mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-        } else {
-            mStatusTextView.setText(R.string.signed_out);
-            mDetailTextView.setText(null);
-
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
-        }
-    }*/
-
-
 }

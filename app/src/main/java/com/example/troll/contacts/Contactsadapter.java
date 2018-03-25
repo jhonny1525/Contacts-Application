@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -24,7 +25,10 @@ public class Contactsadapter extends BaseAdapter {
 
     private Context mContext;
     private List<DocumentSnapshot> mCursor;
+    TextView  contactNameView;
     nContact temp;
+    ImageView message;
+    View view;
 
     public Contactsadapter(Context context, List<DocumentSnapshot> cursor) {
         mContext = context;
@@ -49,8 +53,7 @@ public class Contactsadapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        View view;
-        boolean showSeparator = false;
+
 
 
         if (convertView == null) {
@@ -62,16 +65,20 @@ public class Contactsadapter extends BaseAdapter {
         }
 
         // Set contact name and number
-        TextView contactNameView = (TextView) view.findViewById(R.id.fullname);
+         contactNameView = (TextView) view.findViewById(R.id.fullname);
         TextView contactNumberView = (TextView) view.findViewById(R.id.number);
         ImageView call=view.findViewById(R.id.call);
-        ImageView message=view.findViewById(R.id.message);
+        message=view.findViewById(R.id.message);
+        temp =(nContact)mCursor.get(position).toObject(nContact.class);
+        contactNameView.setTag(temp);
+        contactNameView.setTag(R.string.tag1,mCursor.get(position).getId());
+        call.setTag(temp);
 
-       temp =(nContact)mCursor.get(position).toObject(nContact.class);
         call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
+                nContact temp=(nContact) view.getTag();
                 intent.setData(Uri.parse("tel:"+temp.contactNumbers.get(0).getCountryCode()+temp.contactNumbers.get(0).getNumber()));
                 mContext.startActivity(intent);
             }
@@ -87,6 +94,16 @@ public class Contactsadapter extends BaseAdapter {
             }
         });
         String name = temp.firstName+" "+temp.lastName;
+        contactNameView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent viewc=new Intent(mContext,ViewContact.class);
+                nContact temp=(nContact) view.getTag();
+                viewc.putExtra("contact",temp);
+                viewc.putExtra("contactid",view.getTag(R.string.tag1).toString());
+                mContext.startActivity(viewc);
+            }
+        });
         if(!temp.contactNumbers.isEmpty())
         contactNumberView.setText(temp.contactNumbers.get(0).getCountryCode()+temp.contactNumbers.get(0).getNumber());
         else

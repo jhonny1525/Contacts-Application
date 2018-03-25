@@ -1,10 +1,12 @@
 package com.example.troll.contacts;
 
+import java.io.Serializable;
+
 /**
  * Created by troll on 22-03-2018.
  */
 
-public class contactNumber {
+public class contactNumber implements Serializable{
     public String countryCode,contactType;
     String number;
 

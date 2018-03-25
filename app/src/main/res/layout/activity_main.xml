@@ -17,62 +17,16 @@
         android:id="@+id/icon"
 
         />
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/emailwrapper"
-        app:layout_constraintTop_toBottomOf="@id/icon"
-        android:layout_marginTop="20dp"
-        >
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/email"
-        android:layout_margin="14dp"
-        android:elevation="4dp"
-
-        android:hint="Email"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/passwordwraper"
-        app:layout_constraintTop_toBottomOf="@id/emailwrapper"
-        >
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/password"
-        android:elevation="4dp"
-        android:layout_margin="14dp"
-        android:hint="Password"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:id="@+id/loginemail"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:background="@drawable/materialshape"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordwraper"
-        android:layout_margin="10dp"
-        />
     <com.google.android.gms.common.SignInButton
+        android:id="@+id/logingoogle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/loginemail"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:id="@+id/logingoogle"
-        android:layout_marginTop="10dp"
-        />
+        tools:layout_editor_absoluteY="252dp" />
 
 
 </android.support.constraint.ConstraintLayout>

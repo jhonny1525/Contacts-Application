@@ -32,12 +32,23 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintRight_toLeftOf="@id/message"
+            android:src="@drawable/ic_delete_black_24dp"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            android:layout_marginRight="10dp"
+            android:visibility="invisible"
+            android:id="@+id/deletebutton"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/message"
             app:layout_constraintRight_toLeftOf="@id/call"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintTop_toBottomOf="parent"
             android:src="@drawable/ic_message_black_24dp"
-            android:layout_marginRight="23dp"
+            android:layout_marginRight="10dp"
             />
     <ImageView
         android:layout_width="wrap_content"

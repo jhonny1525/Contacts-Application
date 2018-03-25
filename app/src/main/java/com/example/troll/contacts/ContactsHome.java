@@ -1,5 +1,8 @@
 package com.example.troll.contacts;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -39,32 +42,36 @@ public class ContactsHome extends AppCompatActivity {
         mAuth= FirebaseAuth.getInstance();
         contactsListView=findViewById(R.id.contacts);
         fab=findViewById(R.id.addcontact);
-       updateList();
+        if(mAuth.getCurrentUser()!=null)
+            updateList();
 
     }
     public void updateList()
     {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(mAuth.getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                List<DocumentSnapshot> documents=documentSnapshots.getDocuments();
-                Collections.sort(documents, new Comparator<DocumentSnapshot>() {
-                    @Override
-                    public int compare(DocumentSnapshot documentSnapshot, DocumentSnapshot t1) {
-                        return documentSnapshot.getString("firstName").compareToIgnoreCase(t1.getString("firstName"));
-                    }
-                });
-                contactsListView=findViewById(R.id.contacts);
-                contactsListView.setAdapter(new Contactsadapter(ContactsHome.this,documents));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ContactsHome.this, "failed to fetch contacts", Toast.LENGTH_SHORT).show();
-            }
-        });
+        if(mAuth!=null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection(mAuth.getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot documentSnapshots) {
+                    List<DocumentSnapshot> documents = documentSnapshots.getDocuments();
+                    Collections.sort(documents, new Comparator<DocumentSnapshot>() {
+                        @Override
+                        public int compare(DocumentSnapshot documentSnapshot, DocumentSnapshot t1) {
+                            return documentSnapshot.getString("firstName").compareToIgnoreCase(t1.getString("firstName"));
+                        }
+                    });
+                    contactsListView = findViewById(R.id.contacts);
+                    contactsListView.setAdapter(new Contactsadapter(ContactsHome.this, documents));
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(ContactsHome.this, "failed to fetch contacts", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -78,23 +85,49 @@ public class ContactsHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts_home);
         mAuth= FirebaseAuth.getInstance();
+        fab=findViewById(R.id.addcontact);
         contactsListView=findViewById(R.id.contacts);
         contactsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
-                    if (i==SCROLL_STATE_IDLE);
-                        fab.show();
-                    if(i==SCROLL_STATE_TOUCH_SCROLL)
+                if(absListView.getCount()>=6) {
+                    if (i == SCROLL_STATE_IDLE) ;
+                    fab.show();
+                    if (i == SCROLL_STATE_TOUCH_SCROLL || i == SCROLL_STATE_FLING)
                         fab.hide();
+                    if (absListView.getLastVisiblePosition() == absListView.getCount() - 1) {
+                        fab.hide();
+                    }
+                }
             }
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-
-
             }
         });
-        Toast.makeText(this, "Viewing Contacts "+mAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(ContactsHome.this,AddContactActivity.class));
+            }
+        });
        // mAuth.signOut();
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                }).setNegativeButton("No", null).show();
     }
 
     @Override
@@ -102,32 +135,8 @@ public class ContactsHome extends AppCompatActivity {
 
        if(item.getItemId()==R.id.profile)
        {
-         //  mAuth.signOut();
-         //  startActivity(new Intent(ContactsHome.this,MainActivity.class));
-
-           mAuth= FirebaseAuth.getInstance();
-           FirebaseFirestore db = FirebaseFirestore.getInstance();
-           nContact contact=new nContact();
-           contact.address="awfafafafafafawrawraw";
-           contact.firstName="gfxfzxfgHarsh";
-           contact.lastName="Jain";
-           contact.contactNumbers.add(new contactNumber("+91","mobile","7974567256"));
-           contact.contactNumbers.add(new contactNumber("+91","mobile2","7974567246"));
-
-           db.collection(mAuth.getCurrentUser().getUid()).document().set(contact).addOnSuccessListener(new OnSuccessListener<Void>() {
-               @Override
-               public void onSuccess(Void aVoid) {
-                   Toast.makeText(ContactsHome.this, "added", Toast.LENGTH_SHORT).show();
-                   updateList();
-               }
-           }).addOnFailureListener(new OnFailureListener() {
-               @Override
-               public void onFailure(@NonNull Exception e) {
-                   Toast.makeText(ContactsHome.this, "fail", Toast.LENGTH_SHORT).show();
-               }
-           });
-
-
+           Intent i=new Intent(ContactsHome.this,ProfileActivity.class);
+           startActivity(i);
            return true;
        }
         return super.onOptionsItemSelected(item);
